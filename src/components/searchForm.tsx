@@ -13,7 +13,7 @@ export default function SearchForm({ onSubmit }: SearchFormProps) {
   return (
     <form action={handleSubmit}>
       <input type="text" name="topic" />
-      <button type="submit"></button>
+      <button type="submit">Search</button>
     </form>
   );
 }
