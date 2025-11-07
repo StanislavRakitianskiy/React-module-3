@@ -7,6 +7,7 @@ import SearchForm from "./searchForm";
 import type { Article } from "../types/article";
 import ArticleList from "./articleList";
 import { fetchArticles } from "../services/articleService";
+import UseIDForm from "./useIDForm";
 
 import "../App.css";
 
@@ -39,6 +40,7 @@ function App() {
       {isLoading && <p>Please wait, its Loading</p>}
       {isError && <p>Whoops, something went wrong! Please try again!</p>}
       {articles.length > 0 && <ArticleList items={articles} />}
+      <UseIDForm></UseIDForm>
     </>
   );
 }
