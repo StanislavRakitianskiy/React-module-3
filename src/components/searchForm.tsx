@@ -1,21 +1,18 @@
 interface SearchFormProps {
-  onSubmit: (topic: string) => void;
+  onSubmit: (event: string) => void;
 }
-export default function SearchForm({ onSubmit }: SearchFormProps) {
-  // const myKey = import.meta.env.VITE_API_KEY;
-  // console.log(myKey)
+export default function SearchForm({onSubmit}: SearchFormProps) {
   const handleSubmit = (formData: FormData) => {
-    const topic = formData.get("topic") as string;
-    if (topic === "") {
-      alert("Pleace enter search topic");
-      return;
+    const userTopic = formData.get('topic') as string;
+    if (userTopic === '') {
+      alert('Алё блядь, давай может ты что-то введёшь?')
     }
-    onSubmit(topic);
-  };
+    onSubmit(userTopic)
+  }
   return (
     <form action={handleSubmit}>
       <input type="text" name="topic" />
-      <button type="submit">Search</button>
+      <button type="submit">Search st</button>
     </form>
-  );
+  )
 }

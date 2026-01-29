@@ -1,46 +1,71 @@
-import { useState } from "react";
-
-import FormDatas from "./formData";
-import FormAction from "./formAction";
-import FormComponents from "./formComponent";
-import SearchForm from "./searchForm";
-import type { Article } from "../types/article";
-import ArticleList from "./articleList";
-import { fetchArticles } from "../services/articleService";
-import UseIDForm from "./useIDForm";
-
+import { useState, useEffect } from "react";
 import "../App.css";
+import SubmitData from "./SubmitData/SubmitData";
+import SubmitSelect from "./SubmitProps/SubmitProps";
+import AsetsMapItems from "./AsetsList/AsetsList";
+import HTTPServerSubmet from "./HTTPServerSubmet/HTTPServerSubmet";
+import FetchArticles from "../services/articleService";
+import RadioBtn from "./RadioBtn/RadioBtn";
+import CheckBox from "./CheckBox/CheckBox";
+import SelectOp from "./SelectOp/SelectOp";
+import type { Article } from "../types/article";
+import Timer from "./Timer/Timer";
+import axios from "axios";
+
+const handleSubmitProps = (value: string) => {
+  console.log("Submitted value from SubmitProps:", value);
+};
 
 function App() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const handleOrder = (data: string) => {
-    console.log("Order receiced form: ", data);
-    // можна зберегти замовлення, викликати API, показати повідомлення тощо
-  };
-  const handleSearch = async (topic: string) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [person, setPerson] = useState(null);
+  const [cont, setCont] = useState(1);
+  const [start, setStart] = useState(false);
+
+  useEffect(() => {
+    async function fetchPersonStars() {
+      const responsy = await axios.get(`https://swapi.info/api/people/${cont}`);
+      try {
+      setPerson(responsy.data);
+      } catch (error) {
+        console.error("Error fetching person data:", error);
+      } 
+    }
+    fetchPersonStars();
+  }, [cont]);
+
+  const handleSubmit = async (searchTerm: string) => {
     try {
       setIsLoading(true);
-      setIsError(false);
-      const data = await fetchArticles(topic);
-      setArticles(data);
+      setError(false);
+      const fetchedArticles = await FetchArticles(searchTerm);
+      setArticles(fetchedArticles);
     } catch {
-      setIsError(true);
+      setError(true);
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <>
-      <FormDatas></FormDatas>
-      <FormAction></FormAction>
-      <FormComponents onSubmit={handleOrder}></FormComponents>
-      <SearchForm onSubmit={handleSearch}></SearchForm>
-      {isLoading && <p>Please wait, its Loading</p>}
-      {isError && <p>Whoops, something went wrong! Please try again!</p>}
-      {articles.length > 0 && <ArticleList items={articles} />}
-      <UseIDForm></UseIDForm>
+      <SubmitData />
+      <SubmitSelect onSubmit={handleSubmitProps} />
+      <HTTPServerSubmet onSubmit={handleSubmit} />
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error fetching articles. Please try again.</p>}
+      <AsetsMapItems items={articles} />
+      <RadioBtn />
+      <CheckBox />
+      <SelectOp />
+      <button onClick={() => setCont(cont + 1)}>Next Person {cont}</button>
+      <pre>{JSON.stringify(person, null, 2)}</pre>
+      <button onClick={() => setStart(!start)}>
+        {start ? 'Hide timer' : 'Show timer'}
+      </button>
+      {start && <Timer />}
     </>
   );
 }
